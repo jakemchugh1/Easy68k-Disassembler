@@ -80,38 +80,6 @@ ERROR
 DONE
             RTS
 
-ASCII_CMP   **use this to compare and convert values in register D2
-            CMPI #$30,D2    ***checks for negative value
-            BLT ERROR
-            
-            CMPI #$39,D2    ***checks for valid ascii value
-            BLE ASCII_NUM
-            
-            CMPI #$41,D2    
-            BLT ERROR
-            
-            CMPI #$46,D2
-            BLE ERROR
-            
-            CMPI #$61,D2
-            BLT ERROR
-            
-            CMPI #$66,D2
-            BLE ERROR
-            
-            BRA ERROR
-            
-ASCII_NUM **this converts numbers to hex
-            SUBI.B  #$30,D2
-            BRA DONE
-
-ASCII_U **this converts upper ascii chars to hex
-            SUBI.B #55,D2
-            BRA DONE
-
-ASCII_L **this converts lower ascii chars to hex
-            SUBI.B #87,D2
-            BRA DONE
 
 * Put variables and constants here
 CR          EQU     $0D
@@ -122,6 +90,7 @@ OUTPUT_MSG  DC.B    'Enter the ending address: ',0
 ERROR_MSG   DC.B    'Not a valid address',CR,LF,'Try again',CR,LF,CR,LF,0
 
     END     INPUT
+
 
 
 
