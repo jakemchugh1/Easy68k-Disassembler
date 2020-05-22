@@ -1,0 +1,210 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 5/21/2020 11:06:25 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00000000                             7  
+00000000                             8  
+00001000                             9      ORG     $1000
+00001000                            10  INPUT
+00001000  4282                      11              CLR.L   D2              * ensure working space is clear
+00001002  4283                      12              CLR.L   D3
+00001004                            13  
+00001004  43F9 00001112             14              LEA     INPUT_MSG,A1    * request input for start
+0000100A  103C 000E                 15              MOVE.B  #14,D0
+0000100E  4E4F                      16              TRAP    #15
+00001010                            17  
+00001010  6100 0020                 18              BSR     GATHER          * gather input for start
+00001014                            19              
+00001014  2A43                      20              MOVEA.L D3,A5           * moves start address to A5
+00001016  4283                      21              CLR.L   D3              * clear D3 for end address
+00001018                            22  
+00001018  43F9 0000112F             23              LEA     OUTPUT_MSG,A1   * request input for end
+0000101E  103C 000E                 24              MOVE.B  #14,D0
+00001022  4E4F                      25              TRAP    #15
+00001024                            26  
+00001024  6100 000C                 27              BSR     GATHER          * gather input for end
+00001028                            28              
+00001028  2C43                      29              MOVEA.L D3,A6           * moves end address to A6
+0000102A                            30              
+0000102A  4282                      31              CLR.L   D2              * clear working areas
+0000102C  4283                      32              CLR.L   D3
+0000102E                            33  
+0000102E  FFFF FFFF                 34              SIMHALT
+00001032                            35  
+00001032                            36  GATHER
+00001032  227C 00000400             37              MOVEA.L #$400,A1        * store string at location $400
+00001038  103C 0002                 38              MOVE.B  #2,D0           * get input
+0000103C  4E4F                      39              TRAP    #15
+0000103E                            40  
+0000103E  B27C 0008                 41              CMP     #$8,D1          * checks for maximum 8 char input
+00001042  6E00 0048                 42              BGT     ERROR
+00001046                            43  
+00001046  4EF9 0000104C             44              JMP     TO_HEX          * begin conversion to hex
+0000104C                            45  
+0000104C                            46  TO_HEX
+0000104C  1419                      47              MOVE.B  (A1)+,D2        * store ascii char in D2
+0000104E  B47C 0030                 48              CMP     #$30,D2
+00001052  6D00 0038                 49              BLT     ERROR           * out of bounds, char below '0'
+00001056                            50              
+00001056  0442 0030                 51              SUB     #$30,D2         * brings ascii to number range
+0000105A  B47C 0009                 52              CMP     #$9,D2          * compares if in number range
+0000105E  6F00 001A                 53              BLE     SHIFT           * char converted to hex
+00001062                            54              
+00001062  5F42                      55              SUB     #$7,D2          * brings ascii char to alpha range
+00001064  B47C 000A                 56              CMP     #$A,D2          * compares if in alpha range
+00001068  6D00 0022                 57              BLT     ERROR           * out of bounds, char below 'A'
+0000106C  B47C 000F                 58              CMP     #$F,D2          * compares if in alpha range
+00001070  6E00 001A                 59              BGT     ERROR           * out of bounds, char above 'F'
+00001074                            60              
+00001074  4EF9 0000107A             61              JMP     SHIFT           
+0000107A                            62  
+0000107A                            63  SHIFT
+0000107A  E98B                      64              LSL.L   #4,D3           * shifts bits left to make room
+0000107C  D682                      65              ADD.L   D2,D3           * appends new char
+0000107E                            66              
+0000107E  5341                      67              SUB.W   #$1,D1          * decrement size of input string
+00001080  B27C 0000                 68              CMP     #$0,D1          * check if size = 0
+00001084  6700 008A                 69              BEQ     DONE            * no more char to convert
+00001088                            70              
+00001088  4EF8 104C                 71              JMP     TO_HEX          * convert more char
+0000108C                            72              
+0000108C                            73  ERROR
+0000108C  429F                      74              CLR.L   (A7)+           * reset stack pointer
+0000108E                            75  
+0000108E  43F9 0000114A             76              LEA     ERROR_MSG,A1    * print error message
+00001094  103C 000E                 77              MOVE.B  #14,D0
+00001098  4E4F                      78              TRAP    #15
+0000109A                            79  
+0000109A  4EF8 1000                 80              JMP     INPUT           * jump back to beginning
+0000109E                            81              
+0000109E                            82  MAIN            
+0000109E  361D                      83              move.w (A5)+,D3  **move hex data into D3
+000010A0                            84              
+000010A0  B638 0001                 85              cmp.b $0001,D3   **compares byte to byte code 0001
+000010A4  6700 0052                 86              BEQ   BITS0001 **branches if equal
+000010A8                            87              
+000010A8  B638 0010                 88              cmp.b $0010,D3   **compares byte to byte code
+000010AC  6700 0062                 89              BEQ   BITS0010 **branches if equal
+000010B0                            90              
+000010B0  B638 0011                 91              cmp.b $0011,D3   **compares byte to byte code
+000010B4  6700 005A                 92              BEQ   BITS0011 **branches if equal
+000010B8                            93              
+000010B8  B638 0100                 94              cmp.b $0100,D3   **compares byte to byte code
+000010BC  6700 0052                 95              BEQ   BITS0100 **branches if equal
+000010C0                            96              
+000010C0  B638 0110                 97              cmp.b $0110,D3   **compares byte to byte code
+000010C4  6700 004A                 98              BEQ   BITS0110 **branches if equal
+000010C8                            99              
+000010C8  B638 1000                100              cmp.b $1000,D3   **compares byte to byte code
+000010CC  6700 0042                101              BEQ   BITS1000 **branches if equal
+000010D0                           102              
+000010D0  B638 1001                103              cmp.b $1001,D3   **compares byte to byte code
+000010D4  6700 003A                104              BEQ   BITS1001 **branches if equal
+000010D8                           105              
+000010D8  B638 1011                106              cmp.b $1011,D3   **compares byte to byte code
+000010DC  6700 0032                107              BEQ   BITS1011 **branches if equal
+000010E0                           108              
+000010E0  B638 1100                109              cmp.b $1100,D3   **compares byte to byte code
+000010E4  6700 002A                110              BEQ   BITS1100 **branches if equal
+000010E8                           111              
+000010E8  B638 1101                112              cmp.b $1101,D3   **compares byte to byte code
+000010EC  6700 0022                113              BEQ   BITS1101 **branches if equal
+000010F0                           114              
+000010F0  B638 1110                115              cmp.b $1110,D3   **compares byte to byte code
+000010F4  6700 001A                116              BEQ   BITS1110 **branches if equal
+000010F8                           117  
+000010F8                           118  
+000010F8                           119              
+000010F8                           120  BITS0001 **move.b
+000010F8                           121              **printing 'move."
+000010F8  43F9 00001171            122              LEA PRINTMOVE,A1
+000010FE  103C 000E                123              MOVE.B #14,D0
+00001102  4E4F                     124              Trap #15
+00001104                           125              
+00001104                           126              **printing 'B"
+00001104  43F9 0000116F            127              LEA PRINTB,A1
+0000110A  103C 000E                128              MOVE.B #14,D0
+0000110E  4E4F                     129              Trap #15
+00001110                           130  
+00001110                           131  BITS0010 **move.w,movea.w
+00001110                           132  
+00001110                           133  BITS0011 **move.l,movea.l
+00001110                           134  
+00001110                           135  BITS0100 **jsr,lea,movem,rts
+00001110                           136  
+00001110                           137  BITS0110 **Bcc
+00001110                           138  
+00001110                           139  BITS1000 **OR
+00001110                           140  
+00001110                           141  BITS1001 **sub
+00001110                           142  
+00001110                           143  BITS1011 **cmp
+00001110                           144  
+00001110                           145  BITS1100 **and
+00001110                           146  
+00001110                           147  BITS1101 ** add
+00001110                           148  
+00001110                           149  BITS1110 ** ASd,LSd
+00001110                           150  
+00001110                           151  DONE
+00001110  4E75                     152              RTS
+00001112                           153  
+00001112                           154  
+00001112                           155  
+00001112                           156  * Put variables and constants here
+00001112  =0000000D                157  CR          EQU     $0D
+00001112  =0000000A                158  LF          EQU     $0A
+00001112  =0000F000                159  bits12_15   EQU     $F000
+00001112                           160  
+00001112= 45 6E 74 65 72 20 ...    161  INPUT_MSG   DC.B    'Enter the starting address: ',0
+0000112F= 45 6E 74 65 72 20 ...    162  OUTPUT_MSG  DC.B    'Enter the ending address: ',0
+0000114A= 4E 6F 74 20 61 20 ...    163  ERROR_MSG   DC.B    'Not a valid address',CR,LF,'Try again',CR,LF,CR,LF,0
+0000116D                           164  
+0000116D= 20 00                    165  PRINTSPACE  DC.B    ' ',0
+0000116F                           166  
+0000116F= 42 00                    167  PRINTB      DC.B    'B',0
+00001171                           168  
+00001171= 4D 4F 56 45 2E 00        169  PRINTMOVE   DC.B    'MOVE.',0
+00001177                           170  
+00001177                           171      END     INPUT
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+BITS0001            10F8
+BITS0010            1110
+BITS0011            1110
+BITS0100            1110
+BITS0110            1110
+BITS1000            1110
+BITS1001            1110
+BITS1011            1110
+BITS1100            1110
+BITS1101            1110
+BITS1110            1110
+BITS12_15           F000
+CR                  D
+DONE                1110
+ERROR               108C
+ERROR_MSG           114A
+GATHER              1032
+INPUT               1000
+INPUT_MSG           1112
+LF                  A
+MAIN                109E
+OUTPUT_MSG          112F
+PRINTB              116F
+PRINTMOVE           1171
+PRINTSPACE          116D
+SHIFT               107A
+TO_HEX              104C

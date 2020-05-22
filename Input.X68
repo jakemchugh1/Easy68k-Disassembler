@@ -4,6 +4,8 @@
 * Date       :
 * Description:
 *-----------------------------------------------------------
+
+
     ORG     $1000
 INPUT
             CLR.L   D2              * ensure working space is clear
@@ -76,6 +78,75 @@ ERROR
             TRAP    #15
 
             JMP     INPUT           * jump back to beginning
+            
+MAIN            
+            move.w (A5)+,D3  **move hex data into D3
+            
+            cmp.b $0001,D3   **compares byte to byte code 0001
+            BEQ   BITS0001 **branches if equal
+            
+            cmp.b $0010,D3   **compares byte to byte code
+            BEQ   BITS0010 **branches if equal
+            
+            cmp.b $0011,D3   **compares byte to byte code
+            BEQ   BITS0011 **branches if equal
+            
+            cmp.b $0100,D3   **compares byte to byte code
+            BEQ   BITS0100 **branches if equal
+            
+            cmp.b $0110,D3   **compares byte to byte code
+            BEQ   BITS0110 **branches if equal
+            
+            cmp.b $1000,D3   **compares byte to byte code
+            BEQ   BITS1000 **branches if equal
+            
+            cmp.b $1001,D3   **compares byte to byte code
+            BEQ   BITS1001 **branches if equal
+            
+            cmp.b $1011,D3   **compares byte to byte code
+            BEQ   BITS1011 **branches if equal
+            
+            cmp.b $1100,D3   **compares byte to byte code
+            BEQ   BITS1100 **branches if equal
+            
+            cmp.b $1101,D3   **compares byte to byte code
+            BEQ   BITS1101 **branches if equal
+            
+            cmp.b $1110,D3   **compares byte to byte code
+            BEQ   BITS1110 **branches if equal
+
+
+            
+BITS0001 **move.b
+            **printing 'move."
+            LEA PRINTMOVE,A1
+            MOVE.B #14,D0
+            Trap #15
+            
+            **printing 'B"
+            LEA PRINTB,A1
+            MOVE.B #14,D0
+            Trap #15
+
+BITS0010 **move.w,movea.w
+
+BITS0011 **move.l,movea.l
+
+BITS0100 **jsr,lea,movem,rts
+
+BITS0110 **Bcc
+
+BITS1000 **OR
+
+BITS1001 **sub
+
+BITS1011 **cmp
+
+BITS1100 **and
+
+BITS1101 ** add
+
+BITS1110 ** ASd,LSd
 
 DONE
             RTS
@@ -85,12 +156,20 @@ DONE
 * Put variables and constants here
 CR          EQU     $0D
 LF          EQU     $0A
+bits12_15   EQU     $F000
 
 INPUT_MSG   DC.B    'Enter the starting address: ',0
 OUTPUT_MSG  DC.B    'Enter the ending address: ',0
 ERROR_MSG   DC.B    'Not a valid address',CR,LF,'Try again',CR,LF,CR,LF,0
 
+PRINTSPACE  DC.B    ' ',0
+
+PRINTB      DC.B    'B',0
+
+PRINTMOVE   DC.B    'MOVE.',0
+
     END     INPUT
+
 
 
 
