@@ -80,53 +80,53 @@ ERROR
             JMP     INPUT           * jump back to beginning
             
 MAIN            
-            move.w (A5)+,D3  **move hex data into D3
+            move.w  (A5)+,D3        * move hex data into D3
             
-            cmp.b $0001,D3   **compares byte to byte code 0001
-            BEQ   BITS0001 **branches if equal
+            cmp.b   $0001,D3        * compares byte to byte code 0001
+            BEQ     BITS0001        * branches if equal
             
-            cmp.b $0010,D3   **compares byte to byte code
-            BEQ   BITS0010 **branches if equal
+            cmp.b   $0010,D3        * compares byte to byte code
+            BEQ     BITS0010        * branches if equal
             
-            cmp.b $0011,D3   **compares byte to byte code
-            BEQ   BITS0011 **branches if equal
+            cmp.b   $0011,D3        * compares byte to byte code
+            BEQ     BITS0011        * branches if equal
             
-            cmp.b $0100,D3   **compares byte to byte code
-            BEQ   BITS0100 **branches if equal
+            cmp.b   $0100,D3        * compares byte to byte code
+            BEQ     BITS0100        * branches if equal
             
-            cmp.b $0110,D3   **compares byte to byte code
-            BEQ   BITS0110 **branches if equal
+            cmp.b   $0110,D3        * compares byte to byte code
+            BEQ     BITS0110        * branches if equal
             
-            cmp.b $1000,D3   **compares byte to byte code
-            BEQ   BITS1000 **branches if equal
+            cmp.b   $1000,D3        * compares byte to byte code
+            BEQ     BITS1000        * branches if equal
             
-            cmp.b $1001,D3   **compares byte to byte code
-            BEQ   BITS1001 **branches if equal
+            cmp.b   $1001,D3        * compares byte to byte code
+            BEQ     BITS1001        * branches if equal
             
-            cmp.b $1011,D3   **compares byte to byte code
-            BEQ   BITS1011 **branches if equal
+            cmp.b   $1011,D3        * compares byte to byte code
+            BEQ     BITS1011        * branches if equal
             
-            cmp.b $1100,D3   **compares byte to byte code
-            BEQ   BITS1100 **branches if equal
+            cmp.b   $1100,D3        * compares byte to byte code
+            BEQ     BITS1100        * branches if equal
             
-            cmp.b $1101,D3   **compares byte to byte code
-            BEQ   BITS1101 **branches if equal
+            cmp.b   $1101,D3        * compares byte to byte code
+            BEQ     BITS1101        * branches if equal
             
-            cmp.b $1110,D3   **compares byte to byte code
-            BEQ   BITS1110 **branches if equal
+            cmp.b   $1110,D3        * compares byte to byte code
+            BEQ     BITS1110        * branches if equal
 
 
             
 BITS0001 **move.b
             **printing 'move."
-            LEA PRINTMOVE,A1
-            MOVE.B #14,D0
-            Trap #15
+            LEA     P_MOVE,A1
+            MOVE.B  #14,D0
+            Trap    #15
             
             **printing 'B"
-            LEA PRINTB,A1
-            MOVE.B #14,D0
-            Trap #15
+            LEA     P_B,A1
+            MOVE.B  #14,D0
+            Trap    #15
 
 BITS0010 **move.w,movea.w
 
@@ -137,14 +137,29 @@ BITS0100 **jsr,lea,movem,rts
 BITS0110 **Bcc
 
 BITS1000 **OR
+            LEA     P_OR,A1
+            MOVE.B  #14,D0
+            TRAP    #15
 
 BITS1001 **sub
+            LEA     P_SUB,A1
+            MOVE.B  #14,D0
+            TRAP    #15
 
 BITS1011 **cmp
+            LEA     P_CMP,A1
+            MOVE.B  #14,D0
+            TRAP    #15
 
 BITS1100 **and
+            LEA     P_AND,A1
+            MOVE.B  #14,D0
+            TRAP    #15
 
 BITS1101 ** add
+            LEA     P_ADD,A1
+            MOVE.B  #14,D0
+            TRAP    #15
 
 BITS1110 ** ASd,LSd
 
@@ -162,16 +177,33 @@ INPUT_MSG   DC.B    'Enter the starting address: ',0
 OUTPUT_MSG  DC.B    'Enter the ending address: ',0
 ERROR_MSG   DC.B    'Not a valid address',CR,LF,'Try again',CR,LF,CR,LF,0
 
-PRINTSPACE  DC.B    ' ',0
+P_SPACE     DC.B    ' ',0
 
-PRINTB      DC.B    'B',0
+P_MOVE      DC.B    'MOVE.',0
+P_MOVEA     DC.B    'MOVEA.',0
+P_MOVEM     DC.B    'MOVEM.',0
+P_ADD       DC.B    'ADD.',0
+P_SUB       DC.B    'SUB.',0
+P_LEA       DC.B    'LEA',0
+P_AND       DC.B    'AND.',0
+P_OR        DC.B    'OR.',0
+P_CMP       DC.B    'CMP.',0
+P_BCC       DC.B    'BCC.',0
+P_BGT       DC.B    'BGT.',0
+P_BLE       DC.B    'BLE.',0
+P_JSR       DC.B    'JSR',0
+P_RTS       DC.B    'RTS',0
 
-PRINTMOVE   DC.B    'MOVE.',0
+P_AS        DC.B    'AS',0
+P_LS        DC.B    'LS',0
+P_LEFT      DC.B    'L.',0          * left
+P_R         DC.B    'R.',0          * right
+
+P_B         DC.B    'B',0           * byte
+P_W         DC.B    'W',0           * word
+P_L         DC.B    'L',0           * long
 
     END     INPUT
-
-
-
 
 *~Font name~Courier New~
 *~Font size~10~
