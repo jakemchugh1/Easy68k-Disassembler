@@ -667,7 +667,7 @@ BITS0001 **move.b
 
 BITS0010 **move.l,movea.l
             CLR.L   D3 **clear d3
-            CLR.L   D4 **clear d4
+            
             MOVE.W (A5), D3 ** move (but do not advance) the data in a5 to d3
             ANDI.L #$01C0, D3 **hide undesired bits
             LSR.W   #6,D1   **shift the bits into position
@@ -675,14 +675,43 @@ BITS0010 **move.l,movea.l
             BEQ     MOVEA_L **if equal goto MOVEA_L
             BRA     MOVE_L  **else goto MOVEA_L
 MOVEA_L
-            
+        **to do      
             
 MOVE_L            
-            	
+        **to do      	
             
 BITS0011 **move.w,movea.w
+            CLR.L   D3 **clear d3
+
+            MOVE.W (A5), D3 ** move (but do not advance) the data in a5 to d3
+            ANDI.L #$01C0, D3 **hide undesired bits
+            LSR.W   #6,D1   **shift the bits into position
+            CMPI.B  #%0001,D1 **check to see if this is movea.l
+            BEQ     MOVEA_L **if equal goto MOVEA_W
+            BRA     MOVE_L  **else goto MOVEA_W
+            
+MOVEA_W
+      **to do      
+            
+MOVE_W
+        **to do   
 
 BITS0100 **jsr,lea,movem,rts
+        **this one is going to suck to write
+            CLR.L   D3 **clear d3
+            CLR.L   D4 **clear d4
+            MOVE.W (A5),D3 ** move (but do not advance) the data in a5 to d3
+            ANDI.L #$0F00, D3 **hide undesired bits
+            LSR.W   #8,D1   **shift the bits into position
+            CMPI.B  #%1110,D1 **check to see if this is movea.l
+            BEQ     MOVEA_L **if equal goto IS1110
+
+NOT1110
+            **todo            
+
+IS1110
+            **toto
+
 
 BITS0110 **Bcc
 

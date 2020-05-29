@@ -1,6 +1,6 @@
 000016DC Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 5/28/2020 8:25:06 PM
+Created On: 5/28/2020 9:07:42 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      :
@@ -552,7 +552,7 @@ Created On: 5/28/2020 8:25:06 PM
 000016DC  4282                     548              CLR.L   D2              * ensure working space is clear
 000016DE  4283                     549              CLR.L   D3
 000016E0                           550  
-000016E0  43F9 0000182A            551              LEA     INPUT_MSG,A1    * request input for start
+000016E0  43F9 0000185A            551              LEA     INPUT_MSG,A1    * request input for start
 000016E6  103C 000E                552              MOVE.B  #14,D0
 000016EA  4E4F                     553              TRAP    #15
 000016EC                           554  
@@ -561,7 +561,7 @@ Created On: 5/28/2020 8:25:06 PM
 000016F0  2A43                     557              MOVEA.L D3,A5           * moves start address to A5
 000016F2  4283                     558              CLR.L   D3              * clear D3 for end address
 000016F4                           559  
-000016F4  43F9 00001847            560              LEA     OUTPUT_MSG,A1   * request input for end
+000016F4  43F9 00001877            560              LEA     OUTPUT_MSG,A1   * request input for end
 000016FA  103C 000E                561              MOVE.B  #14,D0
 000016FE  4E4F                     562              TRAP    #15
 00001700                           563  
@@ -607,14 +607,14 @@ Created On: 5/28/2020 8:25:06 PM
 0000175A                           603              
 0000175A  5341                     604              SUB.W   #$1,D1          * decrement size of input string
 0000175C  B27C 0000                605              CMP     #$0,D1          * check if size = 0
-00001760  6700 00C6                606              BEQ     DONE            * no more char to convert
+00001760  6700 00F6                606              BEQ     DONE            * no more char to convert
 00001764                           607              
 00001764  4EF8 1728                608              JMP     TO_HEX          * convert more char
 00001768                           609              
 00001768                           610  ERROR
 00001768  429F                     611              CLR.L   (A7)+           * reset stack pointer
 0000176A                           612  
-0000176A  43F9 00001862            613              LEA     ERROR_MSG,A1    * print error message
+0000176A  43F9 00001892            613              LEA     ERROR_MSG,A1    * print error message
 00001770  103C 000E                614              MOVE.B  #14,D0
 00001774  4E4F                     615              TRAP    #15
 00001776                           616  
@@ -630,121 +630,142 @@ Created On: 5/28/2020 8:25:06 PM
 00001788  6700 0062                626              BEQ     BITS0010        * branches if equal
 0000178C                           627              
 0000178C  B638 0011                628              cmp.b   $0011,D3        * compares byte to byte code
-00001790  6700 005A                629              BEQ     BITS0011        * branches if equal
+00001790  6700 0074                629              BEQ     BITS0011        * branches if equal
 00001794                           630              
 00001794  B638 0100                631              cmp.b   $0100,D3        * compares byte to byte code
-00001798  6700 0052                632              BEQ     BITS0100        * branches if equal
+00001798  6700 0082                632              BEQ     BITS0100        * branches if equal
 0000179C                           633              
 0000179C  B638 0110                634              cmp.b   $0110,D3        * compares byte to byte code
-000017A0  6700 004A                635              BEQ     BITS0110        * branches if equal
+000017A0  6700 007A                635              BEQ     BITS0110        * branches if equal
 000017A4                           636              
 000017A4  B638 1000                637              cmp.b   $1000,D3        * compares byte to byte code
-000017A8  6700 0042                638              BEQ     BITS1000        * branches if equal
+000017A8  6700 0072                638              BEQ     BITS1000        * branches if equal
 000017AC                           639              
 000017AC  B638 1001                640              cmp.b   $1001,D3        * compares byte to byte code
-000017B0  6700 0046                641              BEQ     BITS1001        * branches if equal
+000017B0  6700 0076                641              BEQ     BITS1001        * branches if equal
 000017B4                           642              
 000017B4  B638 1011                643              cmp.b   $1011,D3        * compares byte to byte code
-000017B8  6700 004A                644              BEQ     BITS1011        * branches if equal
+000017B8  6700 007A                644              BEQ     BITS1011        * branches if equal
 000017BC                           645              
 000017BC  B638 1100                646              cmp.b   $1100,D3        * compares byte to byte code
-000017C0  6700 004E                647              BEQ     BITS1100        * branches if equal
+000017C0  6700 007E                647              BEQ     BITS1100        * branches if equal
 000017C4                           648              
 000017C4  B638 1101                649              cmp.b   $1101,D3        * compares byte to byte code
-000017C8  6700 0052                650              BEQ     BITS1101        * branches if equal
+000017C8  6700 0082                650              BEQ     BITS1101        * branches if equal
 000017CC                           651              
 000017CC  B638 1110                652              cmp.b   $1110,D3        * compares byte to byte code
-000017D0  6700 0056                653              BEQ     BITS1110        * branches if equal
+000017D0  6700 0086                653              BEQ     BITS1110        * branches if equal
 000017D4                           654  
 000017D4                           655  
 000017D4                           656              
 000017D4                           657  BITS0001 **move.b
 000017D4                           658              **printing 'move."
-000017D4  43F9 00001887            659              LEA     P_MOVE,A1
+000017D4  43F9 000018B7            659              LEA     P_MOVE,A1
 000017DA  103C 000E                660              MOVE.B  #14,D0
 000017DE  4E4F                     661              Trap    #15
 000017E0                           662              
 000017E0                           663              **printing 'B"
-000017E0  43F9 000018DA            664              LEA     P_B,A1
+000017E0  43F9 0000190A            664              LEA     P_B,A1
 000017E6  103C 000E                665              MOVE.B  #14,D0
 000017EA  4E4F                     666              Trap    #15
 000017EC                           667  
-000017EC                           668  BITS0010 **move.w,movea.w
-000017EC                           669  
-000017EC                           670  BITS0011 **move.l,movea.l
-000017EC                           671  
-000017EC                           672  BITS0100 **jsr,lea,movem,rts
-000017EC                           673  
-000017EC                           674  BITS0110 **Bcc
-000017EC                           675  
-000017EC                           676  BITS1000 **OR
-000017EC  43F9 000018AE            677              LEA     P_OR,A1
-000017F2  103C 000E                678              MOVE.B  #14,D0
-000017F6  4E4F                     679              TRAP    #15
-000017F8                           680  
-000017F8                           681  BITS1001 **sub
-000017F8  43F9 000018A0            682              LEA     P_SUB,A1
-000017FE  103C 000E                683              MOVE.B  #14,D0
-00001802  4E4F                     684              TRAP    #15
-00001804                           685  
-00001804                           686  BITS1011 **cmp
-00001804  43F9 000018B2            687              LEA     P_CMP,A1
-0000180A  103C 000E                688              MOVE.B  #14,D0
-0000180E  4E4F                     689              TRAP    #15
-00001810                           690  
-00001810                           691  BITS1100 **and
-00001810  43F9 000018A9            692              LEA     P_AND,A1
-00001816  103C 000E                693              MOVE.B  #14,D0
-0000181A  4E4F                     694              TRAP    #15
-0000181C                           695  
-0000181C                           696  BITS1101 ** add
-0000181C  43F9 0000189B            697              LEA     P_ADD,A1
-00001822  103C 000E                698              MOVE.B  #14,D0
-00001826  4E4F                     699              TRAP    #15
-00001828                           700  
-00001828                           701  BITS1110 ** ASd,LSd
-00001828                           702  
-00001828                           703  DONE
-00001828  4E75                     704              RTS
-0000182A                           705  
-0000182A                           706  
-0000182A                           707  
-0000182A                           708  * Put variables and constants here
-0000182A  =0000000D                709  CR          EQU     $0D
-0000182A  =0000000A                710  LF          EQU     $0A
-0000182A  =0000F000                711  bits12_15   EQU     $F000
-0000182A                           712  
-0000182A= 45 6E 74 65 72 20 ...    713  INPUT_MSG   DC.B    'Enter the starting address: ',0
-00001847= 45 6E 74 65 72 20 ...    714  OUTPUT_MSG  DC.B    'Enter the ending address: ',0
-00001862= 4E 6F 74 20 61 20 ...    715  ERROR_MSG   DC.B    'Not a valid address',CR,LF,'Try again',CR,LF,CR,LF,0
-00001885                           716  
-00001885= 20 00                    717  P_SPACE     DC.B    ' ',0
-00001887                           718  
-00001887= 4D 4F 56 45 2E 00        719  P_MOVE      DC.B    'MOVE.',0
-0000188D= 4D 4F 56 45 41 2E 00     720  P_MOVEA     DC.B    'MOVEA.',0
-00001894= 4D 4F 56 45 4D 2E 00     721  P_MOVEM     DC.B    'MOVEM.',0
-0000189B= 41 44 44 2E 00           722  P_ADD       DC.B    'ADD.',0
-000018A0= 53 55 42 2E 00           723  P_SUB       DC.B    'SUB.',0
-000018A5= 4C 45 41 00              724  P_LEA       DC.B    'LEA',0
-000018A9= 41 4E 44 2E 00           725  P_AND       DC.B    'AND.',0
-000018AE= 4F 52 2E 00              726  P_OR        DC.B    'OR.',0
-000018B2= 43 4D 50 2E 00           727  P_CMP       DC.B    'CMP.',0
-000018B7= 42 43 43 2E 00           728  P_BCC       DC.B    'BCC.',0
-000018BC= 42 47 54 2E 00           729  P_BGT       DC.B    'BGT.',0
-000018C1= 42 4C 45 2E 00           730  P_BLE       DC.B    'BLE.',0
-000018C6= 4A 53 52 00              731  P_JSR       DC.B    'JSR',0
-000018CA= 52 54 53 00              732  P_RTS       DC.B    'RTS',0
-000018CE                           733  
-000018CE= 41 53 00                 734  P_AS        DC.B    'AS',0
-000018D1= 4C 53 00                 735  P_LS        DC.B    'LS',0
-000018D4= 4C 2E 00                 736  P_LEFT      DC.B    'L.',0          * left
-000018D7= 52 2E 00                 737  P_R         DC.B    'R.',0          * right
-000018DA                           738  
-000018DA= 42 00                    739  P_B         DC.B    'B',0           * byte
-000018DC= 57 00                    740  P_W         DC.B    'W',0           * word
-000018DE= 4C 00                    741  P_L         DC.B    'L',0           * long
-000018E0                           742  
-000018E0                           743      END     INPUT
+000017EC                           668  BITS0010 **move.l,movea.l
+000017EC  4283                     669              CLR.L   D3 **clear d3
+000017EE  4284                     670              CLR.L   D4 **clear d4
+000017F0  3615                     671              MOVE.W (A5), D3 ** move (but do not advance) the data in a5 to d3
+000017F2  0283 000001C0            672              ANDI.L #$01C0, D3 **hide undesired bits
+000017F8  EC49                     673              LSR.W   #6,D1   **shift the bits into position
+000017FA  0C01 0001                674              CMPI.B  #%0001,D1 **check to see if this is movea.l
+000017FE  6700 0006                675              BEQ     MOVEA_L **if equal goto MOVEA_L
+00001802  6000 0002                676              BRA     MOVE_L  **else goto MOVEA_L
+00001806                           677  MOVEA_L
+00001806                           678              
+00001806                           679              
+00001806                           680  MOVE_L            
+00001806                           681                  
+00001806                           682              
+00001806                           683  BITS0011 **move.w,movea.w
+00001806  4283                     684              CLR.L   D3 **clear d3
+00001808  4284                     685              CLR.L   D4 **clear d4
+0000180A  3615                     686              MOVE.W (A5), D3 ** move (but do not advance) the data in a5 to d3
+0000180C  0283 000001C0            687              ANDI.L #$01C0, D3 **hide undesired bits
+00001812  EC49                     688              LSR.W   #6,D1   **shift the bits into position
+00001814  0C01 0001                689              CMPI.B  #%0001,D1 **check to see if this is movea.l
+00001818  67EC                     690              BEQ     MOVEA_L **if equal goto MOVEA_L
+0000181A  60EA                     691              BRA     MOVE_L  **else goto MOVEA_L
+0000181C                           692  
+0000181C                           693  BITS0100 **jsr,lea,movem,rts
+0000181C                           694  
+0000181C                           695  BITS0110 **Bcc
+0000181C                           696  
+0000181C                           697  BITS1000 **OR
+0000181C  43F9 000018DE            698              LEA     P_OR,A1
+00001822  103C 000E                699              MOVE.B  #14,D0
+00001826  4E4F                     700              TRAP    #15
+00001828                           701  
+00001828                           702  BITS1001 **sub
+00001828  43F9 000018D0            703              LEA     P_SUB,A1
+0000182E  103C 000E                704              MOVE.B  #14,D0
+00001832  4E4F                     705              TRAP    #15
+00001834                           706  
+00001834                           707  BITS1011 **cmp
+00001834  43F9 000018E2            708              LEA     P_CMP,A1
+0000183A  103C 000E                709              MOVE.B  #14,D0
+0000183E  4E4F                     710              TRAP    #15
+00001840                           711  
+00001840                           712  BITS1100 **and
+00001840  43F9 000018D9            713              LEA     P_AND,A1
+00001846  103C 000E                714              MOVE.B  #14,D0
+0000184A  4E4F                     715              TRAP    #15
+0000184C                           716  
+0000184C                           717  BITS1101 ** add
+0000184C  43F9 000018CB            718              LEA     P_ADD,A1
+00001852  103C 000E                719              MOVE.B  #14,D0
+00001856  4E4F                     720              TRAP    #15
+00001858                           721  
+00001858                           722  BITS1110 ** ASd,LSd
+00001858                           723  
+00001858                           724  DONE
+00001858  4E75                     725              RTS
+0000185A                           726  
+0000185A                           727  
+0000185A                           728  
+0000185A                           729  * Put variables and constants here
+0000185A  =0000000D                730  CR          EQU     $0D
+0000185A  =0000000A                731  LF          EQU     $0A
+0000185A  =0000F000                732  bits12_15   EQU     $F000
+0000185A                           733  
+0000185A= 45 6E 74 65 72 20 ...    734  INPUT_MSG   DC.B    'Enter the starting address: ',0
+00001877= 45 6E 74 65 72 20 ...    735  OUTPUT_MSG  DC.B    'Enter the ending address: ',0
+00001892= 4E 6F 74 20 61 20 ...    736  ERROR_MSG   DC.B    'Not a valid address',CR,LF,'Try again',CR,LF,CR,LF,0
+000018B5                           737  
+000018B5= 20 00                    738  P_SPACE     DC.B    ' ',0
+000018B7                           739  
+000018B7= 4D 4F 56 45 2E 00        740  P_MOVE      DC.B    'MOVE.',0
+000018BD= 4D 4F 56 45 41 2E 00     741  P_MOVEA     DC.B    'MOVEA.',0
+000018C4= 4D 4F 56 45 4D 2E 00     742  P_MOVEM     DC.B    'MOVEM.',0
+000018CB= 41 44 44 2E 00           743  P_ADD       DC.B    'ADD.',0
+000018D0= 53 55 42 2E 00           744  P_SUB       DC.B    'SUB.',0
+000018D5= 4C 45 41 00              745  P_LEA       DC.B    'LEA',0
+000018D9= 41 4E 44 2E 00           746  P_AND       DC.B    'AND.',0
+000018DE= 4F 52 2E 00              747  P_OR        DC.B    'OR.',0
+000018E2= 43 4D 50 2E 00           748  P_CMP       DC.B    'CMP.',0
+000018E7= 42 43 43 2E 00           749  P_BCC       DC.B    'BCC.',0
+000018EC= 42 47 54 2E 00           750  P_BGT       DC.B    'BGT.',0
+000018F1= 42 4C 45 2E 00           751  P_BLE       DC.B    'BLE.',0
+000018F6= 4A 53 52 00              752  P_JSR       DC.B    'JSR',0
+000018FA= 52 54 53 00              753  P_RTS       DC.B    'RTS',0
+000018FE                           754  
+000018FE= 41 53 00                 755  P_AS        DC.B    'AS',0
+00001901= 4C 53 00                 756  P_LS        DC.B    'LS',0
+00001904= 4C 2E 00                 757  P_LEFT      DC.B    'L.',0          * left
+00001907= 52 2E 00                 758  P_R         DC.B    'R.',0          * right
+0000190A                           759  
+0000190A= 42 00                    760  P_B         DC.B    'B',0           * byte
+0000190C= 57 00                    761  P_W         DC.B    'W',0           * word
+0000190E= 4C 00                    762  P_L         DC.B    'L',0           * long
+00001910                           763  
+00001910                           764      END     INPUT
 
 No errors detected
 No warnings generated
@@ -755,23 +776,23 @@ Symbol-name         Value
 -------------------------
 BITS0001            17D4
 BITS0010            17EC
-BITS0011            17EC
-BITS0100            17EC
-BITS0110            17EC
-BITS1000            17EC
-BITS1001            17F8
-BITS1011            1804
-BITS1100            1810
-BITS1101            181C
-BITS1110            1828
+BITS0011            1806
+BITS0100            181C
+BITS0110            181C
+BITS1000            181C
+BITS1001            1828
+BITS1011            1834
+BITS1100            1840
+BITS1101            184C
+BITS1110            1858
 BITS12_15           F000
 CR                  D
-DONE                1828
+DONE                1858
 ERROR               1768
-ERROR_MSG           1862
+ERROR_MSG           1892
 GATHER              170E
 INPUT               16DC
-INPUT_MSG           182A
+INPUT_MSG           185A
 LABEL1              128C
 LABEL2              12AC
 LABEL3              12E4
@@ -779,29 +800,31 @@ LABEL4              1666
 LF                  A
 LOADTESTDATA        1000
 MAIN                177A
-OUTPUT_MSG          1847
-P_ADD               189B
-P_AND               18A9
-P_AS                18CE
-P_B                 18DA
-P_BCC               18B7
-P_BGT               18BC
-P_BLE               18C1
-P_CMP               18B2
-P_JSR               18C6
-P_L                 18DE
-P_LEA               18A5
-P_LEFT              18D4
-P_LS                18D1
-P_MOVE              1887
-P_MOVEA             188D
-P_MOVEM             1894
-P_OR                18AE
-P_R                 18D7
-P_RTS               18CA
-P_SPACE             1885
-P_SUB               18A0
-P_W                 18DC
+MOVEA_L             1806
+MOVE_L              1806
+OUTPUT_MSG          1877
+P_ADD               18CB
+P_AND               18D9
+P_AS                18FE
+P_B                 190A
+P_BCC               18E7
+P_BGT               18EC
+P_BLE               18F1
+P_CMP               18E2
+P_JSR               18F6
+P_L                 190E
+P_LEA               18D5
+P_LEFT              1904
+P_LS                1901
+P_MOVE              18B7
+P_MOVEA             18BD
+P_MOVEM             18C4
+P_OR                18DE
+P_R                 1907
+P_RTS               18FA
+P_SPACE             18B5
+P_SUB               18D0
+P_W                 190C
 SHIFT               1756
 START               1000
 TO_HEX              1728
