@@ -665,9 +665,22 @@ BITS0001 **move.b
             MOVE.B  #14,D0
             Trap    #15
 
-BITS0010 **move.w,movea.w
-
-BITS0011 **move.l,movea.l
+BITS0010 **move.l,movea.l
+            CLR.L   D3 **clear d3
+            CLR.L   D4 **clear d4
+            MOVE.W (A5), D3 ** move (but do not advance) the data in a5 to d3
+            ANDI.L #$01C0, D3 **hide undesired bits
+            LSR.W   #6,D1   **shift the bits into position
+            CMPI.B  #%0001,D1 **check to see if this is movea.l
+            BEQ     MOVEA_L **if equal goto MOVEA_L
+            BRA     MOVE_L  **else goto MOVEA_L
+MOVEA_L
+            
+            
+MOVE_L            
+            	
+            
+BITS0011 **move.w,movea.w
 
 BITS0100 **jsr,lea,movem,rts
 
