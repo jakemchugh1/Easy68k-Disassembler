@@ -713,23 +713,238 @@ IS1110
             **toto
 
 
-BITS0110 **Bcc
+BITS0110    * Bcc
+            CLR.L   D3              * clear working area
+            
+            MOVE.W  (A5),D3         * move machine code to working area
+            ANDI.L  #$0F00,D3       * keep bits 6-8
+            LSR.W   #8,D3           * shift bits into position
+            
+            CMP.B   #%0100,D3       * check if byte & <ea>,Dn
+            BEQ     BCC
+            
+            CMP.B   #%1110,D3       * check if word & <ea>,Dn
+            BEQ     BGT
+            
+            CMP.B   #%1111,D3       * check if long & <ea>,Dn
+            BEQ     BLE
+            
+            BRA     BAD
 
-BITS1000 **OR
-            LEA     P_OR,A1
+BCC
+            LEA     P_BCC,A1         * print BCC
             MOVE.B  #14,D0
             TRAP    #15
 
-BITS1001 **sub
-            LEA     P_SUB,A1
+BGT
+            LEA     P_BGT,A1         * print BGT
             MOVE.B  #14,D0
             TRAP    #15
 
-BITS1011 **cmp
-            LEA     P_CMP,A1
+BLE
+            LEA     P_BLE,A1         * print BLE
             MOVE.B  #14,D0
             TRAP    #15
+            
+Bcc_Displace
+            CLR.L   D3              * clear working area
+            
+            MOVE.W  (A5),D3         * move machine code to working area
+            ANDI.L  #$00FF,D3       * keep bits 0-7
+            LSR.W   #6,D3           * shift bits into position
 
+BITS1000    * OR
+            CLR.L   D3              * clear working area
+            
+            MOVE.W  (A5),D3         * move machine code to working area
+            ANDI.L  #$01C0,D3       * keep bits 6-8
+            LSR.W   #6,D3           * shift bits into position
+            
+            CMP.B   #%0000,D3       * check if byte & <ea>,Dn
+            BEQ     OR_B_EA_Dn
+            
+            CMP.B   #%0001,D3       * check if word & <ea>,Dn
+            BEQ     OR_W_EA_Dn
+            
+            CMP.B   #%0010,D3       * check if long & <ea>,Dn
+            BEQ     OR_L_EA_Dn         
+            
+            CMP.B   #%0100,D3       * check if byte & Dn,<ea>
+            BEQ     OR_B_Dn_EA
+            
+            CMP.B   #%0101,D3       * check if word & Dn,<ea>
+            BEQ     OR_W_Dn_EA
+            
+            CMP.B   #%0110,D3       * check if long & Dn,<ea>
+            BEQ     OR_L_Dn_EA
+            
+            BRA     BAD
+            
+OR_B_EA_Dn
+            LEA     P_OR,A1         * print OR.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_B,A1          * print B
+            TRAP    #15
+            
+OR_W_EA_Dn
+            LEA     P_OR,A1         * print OR.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_W,A1          * print W
+            TRAP    #15
+            
+OR_L_EA_Dn
+            LEA     P_OR,A1         * print OR.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_L,A1          * print L
+            TRAP    #15
+            
+OR_B_Dn_EA
+            LEA     P_OR,A1         * print OR.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_B,A1          * print B
+            TRAP    #15
+            
+OR_W_Dn_EA
+            LEA     P_OR,A1         * print OR.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_W,A1          * print W
+            TRAP    #15
+            
+OR_L_Dn_EA
+            LEA     P_OR,A1         * print OR.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_L,A1          * print L
+            TRAP    #15
+            
+BITS1001    * SUB
+            CLR.L   D3              * clear working area
+            
+            MOVE.W  (A5),D3         * move machine code to working area
+            ANDI.L  #$01C0,D3       * keep bits 6-8
+            LSR.W   #6,D3           * shift bits into position
+            
+            CMP.B   #%0000,D3       * check if byte & <ea>,Dn
+            BEQ     SUB_B_EA_Dn
+            
+            CMP.B   #%0001,D3       * check if word & <ea>,Dn
+            BEQ     SUB_W_EA_Dn
+            
+            CMP.B   #%0010,D3       * check if long & <ea>,Dn
+            BEQ     SUB_L_EA_Dn
+            
+            CMP.B   #%0100,D3       * check if byte & Dn,<ea>
+            BEQ     SUB_B_Dn_EA
+            
+            CMP.B   #%0101,D3       * check if word & Dn,<ea>
+            BEQ     SUB_W_Dn_EA
+            
+            CMP.B   #%0110,D3       * check if long & Dn,<ea>
+            BEQ     SUB_L_Dn_EA
+            
+            BRA     BAD
+            
+SUB_B_EA_Dn
+            LEA     P_SUB,A1        * print SUB.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_B,A1          * print B
+            TRAP    #15
+            
+SUB_W_EA_Dn
+            LEA     P_SUB,A1        * print SUB.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_W,A1          * print W
+            TRAP    #15
+
+SUB_L_EA_Dn
+            LEA     P_SUB,A1        * print SUB.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_L,A1          * print L
+            TRAP    #15
+
+SUB_B_Dn_EA
+            LEA     P_SUB,A1        * print SUB.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_B,A1          * print B
+            TRAP    #15
+            
+SUB_W_Dn_EA
+            LEA     P_SUB,A1        * print SUB.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_W,A1          * print W
+            TRAP    #15
+
+SUB_L_Dn_EA
+            LEA     P_SUB,A1        * print SUB.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_L,A1          * print L
+            TRAP    #15
+
+BITS1011    * CMP
+            CLR.L   D3              * clear working area
+            
+            MOVE.W  (A5),D3         * move machine code to working area
+            ANDI.L  #$01C0,D3       * keep bits 6-8
+            LSR.W   #6,D3           * shift bits into position
+            
+            CMP.B   #%0000,D3       * check if byte & <ea>,Dn
+            BEQ     CMP_B
+            
+            CMP.B   #%0001,D3       * check if word & <ea>,Dn
+            BEQ     CMP_W
+            
+            CMP.B   #%0010,D3       * check if long & <ea>,Dn
+            BEQ     CMP_L
+
+            BRA     BAD
+
+CMP_B
+            LEA     P_CMP,A1        * print CMP.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_B,A1          * print B
+            TRAP    #15
+
+CMP_W
+            LEA     P_CMP,A1        * print CMP.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_W,A1          * print W
+            TRAP    #15
+
+CMP_L
+            LEA     P_CMP,A1        * print CMP.
+            MOVE.B  #14,D0
+            TRAP    #15
+            
+            LEA     P_L,A1          * print L
+            TRAP    #15
+            
 BITS1100 **and
             LEA     P_AND,A1
             MOVE.B  #14,D0
@@ -741,6 +956,9 @@ BITS1101 ** add
             TRAP    #15
 
 BITS1110 ** ASd,LSd
+
+BAD
+            
 
 DONE
             RTS
@@ -756,7 +974,10 @@ INPUT_MSG   DC.B    'Enter the starting address: ',0
 OUTPUT_MSG  DC.B    'Enter the ending address: ',0
 ERROR_MSG   DC.B    'Not a valid address',CR,LF,'Try again',CR,LF,CR,LF,0
 
+P_BAD       DC.B    'BAD',0
+
 P_SPACE     DC.B    ' ',0
+P_NEXTLINE  DC.B    CR,LF,0
 
 P_MOVE      DC.B    'MOVE.',0
 P_MOVEA     DC.B    'MOVEA.',0
@@ -767,9 +988,9 @@ P_LEA       DC.B    'LEA',0
 P_AND       DC.B    'AND.',0
 P_OR        DC.B    'OR.',0
 P_CMP       DC.B    'CMP.',0
-P_BCC       DC.B    'BCC.',0
-P_BGT       DC.B    'BGT.',0
-P_BLE       DC.B    'BLE.',0
+P_BCC       DC.B    'BCC',0
+P_BGT       DC.B    'BGT',0
+P_BLE       DC.B    'BLE',0
 P_JSR       DC.B    'JSR',0
 P_RTS       DC.B    'RTS',0
 
