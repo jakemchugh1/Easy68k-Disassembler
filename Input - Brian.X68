@@ -98,9 +98,8 @@ LOADTESTDATA **loads the data from provided test file at the starting address ab
     MOVE.L    -(A0),(A1)
     MOVE.L    -(A0),(A1)+
     MOVE.L    -(A0),-(A1)
-    
 
-        MOVEM.W   A1-A7,-(A1)
+    MOVEM.W   A1-A7,-(A1)
     MOVEM.L   D1-D7,-(A1)
     MOVEM.W   A1/D7,-(A1)
     MOVEM.L   A1/D7,-(A1)
@@ -568,6 +567,9 @@ INPUT
             CLR.L   D2              * clear working areas
             CLR.L   D3
 
+            MOVE.W  #$16FA,D5       * TEST
+            BSR     TO_ASCII        * TEST
+
             SIMHALT
 
 GATHER
@@ -580,33 +582,6 @@ GATHER
 
             JMP     TO_HEX          * begin conversion to hex
 
-TO_HEX
-            MOVE.B  (A1)+,D2        * store ascii char in D2
-            CMP     #$30,D2
-            BLT     ERROR           * out of bounds, char below '0'
-            
-            SUB     #$30,D2         * brings ascii to number range
-            CMP     #$9,D2          * compares if in number range
-            BLE     SHIFT           * char converted to hex
-            
-            SUB     #$7,D2          * brings ascii char to alpha range
-            CMP     #$A,D2          * compares if in alpha range
-            BLT     ERROR           * out of bounds, char below 'A'
-            CMP     #$F,D2          * compares if in alpha range
-            BGT     ERROR           * out of bounds, char above 'F'
-            
-            JMP     SHIFT           
-
-SHIFT
-            LSL.L   #4,D3           * shifts bits left to make room
-            ADD.L   D2,D3           * appends new char
-            
-            SUB.W   #$1,D1          * decrement size of input string
-            CMP     #$0,D1          * check if size = 0
-            BEQ     DONE            * no more char to convert
-            
-            JMP     TO_HEX          * convert more char
-            
 ERROR
             CLR.L   (A7)+           * reset stack pointer
 
@@ -615,6 +590,82 @@ ERROR
             TRAP    #15
 
             JMP     INPUT           * jump back to beginning
+
+TO_HEX
+            MOVE.B  (A1)+,D2        * store ascii char in D2
+            CMP     #$30,D2
+            BLT     ERROR           * out of bounds, char below '0'
+            
+            SUB     #$30,D2         * brings ascii to number range
+            CMP     #$9,D2          * compares if in number range
+            BLE     HEX_SHIFT           * char converted to hex
+            
+            SUB     #$7,D2          * brings ascii char to alpha range
+            CMP     #$A,D2          * compares if in alpha range
+            BLT     ERROR           * out of bounds, char below 'A'
+            CMP     #$F,D2          * compares if in alpha range
+            BGT     ERROR           * out of bounds, char above 'F'
+            
+            JMP     HEX_SHIFT           
+
+HEX_SHIFT
+            LSL.L   #4,D3           * shifts bits left to make room
+            ADD.L   D2,D3           * appends new char
+            
+            SUB.W   #$1,D1          * decrement size of input string
+            CMP     #$0,D1          * check if size = 0
+            BEQ     HEX_DONE        * no more char to convert
+            
+            JMP     TO_HEX          * convert more char
+
+HEX_DONE
+            RTS
+
+TO_ASCII
+            CLR.L   D3              * clear working area
+            CLR.L   D4
+            CLR.L   D6
+            CLR.L   D7
+
+            MOVE.L  #16,D7          * initialize counter
+            BRA     ASCII_LOOP
+            
+ASCII_LOOP
+            MOVE.L  #$0000F000,D6   * holds masking bit
+            ROL.W   D7,D6           * rotates masking bit
+
+            MOVE.L  D5,D4           * copy hex to be converted
+            AND.L   D6,D4           * keep certain hex value
+            SUB.B   #4,D7           * decrement counter
+            ROR.W   D7,D4           * rotate bits to move hex into first position
+            ADD.W   #$30,D4         * brings hex to number range
+            CMP.W   #$39,D4         * check is in number range
+            BLE     ASCII_SHIFT     * is in number range
+            ADD.W   #$7,D4          * brings alpha range
+            BRA     ASCII_SHIFT
+
+ASCII_SHIFT
+            LSL.L   #8,D3           * shifts bits left to make room
+            MOVE.B  D4,D3           * move ascii value
+            
+            CMP.B   #$0,D7          * checks counter
+            BGT     ASCII_LOOP      * counter not zero, continue loop
+            BRA     ASCII_DONE
+
+ASCII_DONE
+            
+            CLR.L   D0
+            MOVE.L  A1,D0           * ensure null termination
+            ADD.L   #$4,D0
+            MOVEA.L D0,A2
+            MOVE.B  #0,(A2)
+            
+
+            MOVE.L  D3,(A1)         * print
+            MOVE.B  #14,D0
+            TRAP #15
+            
+            RTS
             
 MAIN            
             move.w  (A5)+,D3        * move hex data into D3
@@ -732,17 +783,17 @@ BITS0110    * Bcc
             BRA     BAD
 
 BCC
-            LEA     P_BCC,A1         * print BCC
+            LEA     P_BCC,A1        * print BCC
             MOVE.B  #14,D0
             TRAP    #15
 
 BGT
-            LEA     P_BGT,A1         * print BGT
+            LEA     P_BGT,A1        * print BGT
             MOVE.B  #14,D0
             TRAP    #15
 
 BLE
-            LEA     P_BLE,A1         * print BLE
+            LEA     P_BLE,A1        * print BLE
             MOVE.B  #14,D0
             TRAP    #15
             
@@ -960,10 +1011,6 @@ BITS1110 ** ASd,LSd
 BAD
             
 
-DONE
-            RTS
-
-
 
 * Put variables and constants here
 CR          EQU     $0D
@@ -1004,6 +1051,9 @@ P_W         DC.B    'W',0           * word
 P_L         DC.B    'L',0           * long
 
     END     INPUT
+
+
+
 
 
 *~Font name~Courier New~
