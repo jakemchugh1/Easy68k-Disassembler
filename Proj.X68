@@ -1186,18 +1186,7 @@ opEOR       MOVE.B  #'E',(A2)+          * Populate EOR
 END_1011     RTS
 
 
-HEX_ONE_1100   MOVE.W  D7,D6
-OP_MULU      LSR.L   #6,D6
-            ANDI.W  #$3,D6
-            CMP.B   #$3,D6
-            BEQ     M_MULU
-            JMP     OP_AND_EXG
-M_MULU    MOVE.W  D7,D6
-            LSR.L   #3,D6
-            ANDI.W  #$7,D6
-            CMP.B   #$7,D6
-            BEQ     MOVE_PTR
-            JMP     BAD_INSTANCE     
+HEX_ONE_1100      
 
 MOVE_PTR     ADDQ.W  #2,A0 **increments the pointer
             JMP     BAD_INSTANCE
@@ -1444,17 +1433,7 @@ HEX_FOUR_0000   JSR     BAD_INSTANCE
 HEX_FOUR_0001   JSR     BAD_INSTANCE
             RTS
             
-HEX_FOUR_0010   MOVE.B  #'C',(A2)+
-            MOVE.B  #'L',(A2)+
-            MOVE.B  #'R',(A2)+
-            MOVE.B  #'.',(A2)+
-            JSR     SIZE_TO_BUFF
-            MOVE.B  #' ',(A2)+
-            MOVE.B  #' ',(A2)+
-            MOVE.B  #' ',(A2)+
-            MOVE.B  #' ',(A2)+         
-            JSR     GET_EA       
-            RTS
+HEX_FOUR_0010 
             
 HEX_FOUR_0011   JSR     BAD_INSTANCE
             RTS
@@ -1935,6 +1914,8 @@ END         STOP    #$2700
 *~Font size~10~
 *~Tab type~1~
 *~Tab size~4~
+
+
 
 *~Font name~Courier New~
 *~Font size~10~
