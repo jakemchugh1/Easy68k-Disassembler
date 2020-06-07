@@ -578,7 +578,9 @@ GATHER
             CMP     #$8,D1          * checks for maximum 8 char input
             BGT     ERROR
 
-            JMP     TO_HEX          * begin conversion to hex
+            
+
+     TO_HEX          * begin conversion to hex
 
 TO_HEX
             MOVE.B  (A1)+,D2        * store ascii char in D2
@@ -675,10 +677,34 @@ BITS0010 **move.l,movea.l
             BEQ     MOVEA_L **if equal goto MOVEA_L
             BRA     MOVE_L  **else goto MOVEA_L
 MOVEA_L
-        **to do      
+        **prints movea.l
+            LEA     P_MOVEA,A1
+            MOVE.B  #14,D0
+            Trap    #15
+            
+            LEA     P_L
+            MOVE.B  #14,D0
+            Trap    #15
+            
+            LEA     P_SPACE
+            MOVE.B  #14,D0
+            Trap    #15
+        
+            
             
 MOVE_L            
-        **to do      	
+        **prints move.l
+            LEA     P_MOVE,A1
+            MOVE.B  #14,D0
+            Trap    #15
+            
+            LEA     P_L
+            MOVE.B  #14,D0
+            Trap    #15
+            
+            LEA     P_SPACE
+            MOVE.B  #14,D0
+            Trap    #15    	
             
 BITS0011 **move.w,movea.w
             CLR.L   D3 **clear d3
@@ -687,14 +713,35 @@ BITS0011 **move.w,movea.w
             ANDI.L #$01C0, D3 **hide undesired bits
             LSR.W   #6,D1   **shift the bits into position
             CMPI.B  #%0001,D1 **check to see if this is movea.l
-            BEQ     MOVEA_L **if equal goto MOVEA_W
-            BRA     MOVE_L  **else goto MOVEA_W
+            BEQ     MOVEA_W **if equal goto MOVEA_W
+            BRA     MOVE_W  **else goto MOVEA_W
             
 MOVEA_W
-      **to do      
+      **prints movea.w      
+            LEA     P_MOVEA,A1
+            MOVE.B  #14,D0
+            Trap    #15
             
+            LEA     P_W
+            MOVE.B  #14,D0
+            Trap    #15
+            
+            LEA     P_SPACE
+            MOVE.B  #14,D0
+            Trap    #15
 MOVE_W
-        **to do   
+        **prints move.w
+            LEA     P_MOVE,A1
+            MOVE.B  #14,D0
+            Trap    #15
+            
+            LEA     P_W,A1
+            MOVE.B  #14,D0
+            Trap    #15
+            
+            LEA     P_SPACE,A1
+            MOVE.B  #14,D0
+            Trap    #15   
 
 BITS0100 **jsr,lea,movem,rts
         **this one is going to suck to write
@@ -707,12 +754,82 @@ BITS0100 **jsr,lea,movem,rts
             BEQ     MOVEA_L **if equal goto IS1110
 
 NOT1110
-            **todo            
+            **todo 
+            ANDI.L  #$0001,D3
+            CLR.L   D4
+            CMP.B   D4,D3
+            BNE     IS_LEA  **if equal then it may be LEA
+            **if not equal then bit 8 is zero
+            CLR.L   D3
+            CLR.L   D4
+            MOVE.W  D0,D1
+            ANDI.L  #$0F00,D3
+            LSR.W   #$8,D3
+            CMPI.B  #%0010,D3 **check for clr
+            BEQ     IS_CLR
+            **if not then it is movem
+            BRA     IS_MOVEM
 
 IS1110
             **toto
+            CLR.L   D3   
+            CLR.L   D4  
+            MOVE.W  D0,D3
+            ANDI.L  #$000f,D3
+            LSR.W   #$7,D3
+            ADDI.B  #%0000,D4
+            CMP.B   D4,D3
+            BNE     SEVEN_NOT_ZERO
+            
+            
+SEVEN_IS_ZERO **rts
+            LEA     P_RTS,A1
+            MOVE.B  #14,D0
+            Trap    #15
+            
+
+SEVEN_NOT_ZERO **jmp, jsr
+            CLR.L   D3   
+            CLR.L   D4  
+            MOVE.W  D0,D3
+            ANDI.L  #0040 ,D3
+            LSR.W   #$6,D3
+            CMP.B   D4,D3
+            BNE     IS_JMP
+            BRA     IS_JSR
+            
+IS_JMP
+            LEA     P_JMP,A1
+            MOVE.B  #14,D0
+            Trap    #15
+    
+IS_JSR      
+            LEA     P_JSR,A1
+            MOVE.B  #14,D0
+            Trap    #15
+
+IS_MOVEM
+            LEA     P_MOVEM,D1
+            MOVE.B  #14,D0
+            Trap    #15
 
 
+IS_CLR
+            LEA     P_CLR,D1
+            MOVE.B  #14,D0
+            Trap    #15
+            
+IS_JMP
+            LEA     P_JMP
+            MOVE.B  #14,D0
+            Trap    #15
+            
+IS_JSR
+            LEA     P_JSR
+            MOVE.B  #14,D0
+            Trap    #15
+
+    
 BITS0110 **Bcc
 
 BITS1000 **OR
@@ -742,10 +859,16 @@ BITS1101 ** add
 
 BITS1110 ** ASd,LSd
 
+PRINT_MOVEA
+            LEA movea,A0
+
 DONE
             RTS
 
 
+
+***
+return_flag_word    DS.W    1
 
 * Put variables and constants here
 CR          EQU     $0D
@@ -771,7 +894,7 @@ P_BCC       DC.B    'BCC.',0
 P_BGT       DC.B    'BGT.',0
 P_BLE       DC.B    'BLE.',0
 P_JSR       DC.B    'JSR',0
-P_RTS       DC.B    'RTS',0
+P_RTS       DC.B    'RTS',CR,LF,0
 
 P_AS        DC.B    'AS',0
 P_LS        DC.B    'LS',0
@@ -783,6 +906,7 @@ P_W         DC.B    'W',0           * word
 P_L         DC.B    'L',0           * long
 
     END     INPUT
+
 
 
 *~Font name~Courier New~
