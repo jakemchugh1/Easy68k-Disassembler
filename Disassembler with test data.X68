@@ -3,7 +3,8 @@
 ** Spring 2020
 **put variables and constants here
             OPT     CRE                 
-start       EQU     $1000
+start       EQU     $1000    
+
 
 LOADTESTDATA **loads the data from provided test file at the starting address above ^^^^
     RTS
@@ -541,7 +542,8 @@ label4    CMP.B     $12,D1
     ADDA      D1,A1
     BTST      #1,D1
 
-               
+
+           
 data        EQU     $4000               
 stack       EQU     $A000               
 MIN_ADD      EQU     $00000000          
@@ -831,7 +833,7 @@ DECODE_RTN    MOVEM.L (SP)+,D6-D7/D0-D4/A4-A6
             RTS
             
                              
-GET_OPCODE       MOVE.W  D7,D6
+GET_OPCODE  MOVE.W  D7,D6
             MOVE.B  #TWELVE_BITSHIFT,D4
             LSR.W   D4,D6
             MULU    #6,D6
@@ -840,7 +842,6 @@ GET_OPCODE       MOVE.W  D7,D6
             RTS
 
 OPCODE_JMPTBL      
-         
             JMP     HEX_ONE_0001            
             JMP     HEX_ONE_0010
             JMP     HEX_ONE_0011
@@ -851,9 +852,11 @@ OPCODE_JMPTBL
             JMP     HEX_ONE_1000
             JMP     HEX_ONE_1001
             JMP     HEX_ONE_1010
+			JMP     HEX_ONE_1011
             JMP     HEX_ONE_1100
             JMP     HEX_ONE_1101
             JMP     HEX_ONE_1110
+			JMP     HEX_ONE_1111
 **move.b
 
 HEX_ONE_0001   MOVE.B  #'M',(A2)+
@@ -1097,7 +1100,7 @@ OP_CMP       MOVE.B  #'C',(A2)+
             MOVE.B  #',',(A2)+
             MOVE.B  #'D',(A2)+  
             JSR     H_REG_BITS
-            JMP     END_1011
+            JMP     END_1010
       
                         
 OP_EOR       MOVE.B  #'E',(A2)+
@@ -1114,7 +1117,71 @@ OP_EOR       MOVE.B  #'E',(A2)+
             MOVE.B  #',',(A2)+
             JSR     GET_EA
                              
+END_1010     RTS
+
+HEX_ONE_1011   JSR     GET_SIZE             * return size  in 6 & 7 into D6
+            CMP.B   #%11,D6             * determine if a CMPA
+            BNE     OP_CMP_ERROR
+            MOVE.B  #'C',(A2)+          * Put SUBA into Buff
+            MOVE.B  #'M',(A2)+
+            MOVE.B  #'P',(A2)+
+            MOVE.B  #'A',(A2)+
+            MOVE.B  #'.',(A2)+
+            MOVE.W  D7,D6               * fresh copy of instruction
+            LSR.L   #EIGHT_BITSHIFT,D6          * shift to right to isolate 8th bits
+            ANDI.W  #$0001,D6           * Isolate last bit for size
+            CMP.B   #%1,D6              * compare for a 1 to determine
+            BEQ     CMPA_L               * jump to long, else word
+            MOVE.B  #'W',(A2)+          * add word size into buffer
+            JMP     OP_CMPA              * Skip to adding padding and destination
+CMPA_L      MOVE.B  #'L',(A2)+          * add long size into buffer           
+OP_CMPA     MOVE.B  #' ',(A2)+
+            MOVE.B  #' ',(A2)+
+            MOVE.B  #' ',(A2)+
+
+            JSR     GET_EA              * get source operand
+            MOVE.B  #',',(A2)+
+            MOVE.B  #'A',(A2)+
+            JSR     H_REG_BITS         * Get address register number
+            JMP     END_1011             * Skip to end of sub: hex1_1011
+            
+OP_CMP_ERROR    MOVE.W  D7,D6               * fresh value
+            JSR     GET_DIR_BIT           * determine the direction bit 1 = eor 0 = cmp
+            CMP.B   #%0,D6              * yes, go into CMP
+            BNE     opEOR               * no, go into EOR            
+                   
+opCMP       MOVE.B  #'C',(A2)+          * Populate CMP
+            MOVE.B  #'M',(A2)+
+            MOVE.B  #'P',(A2)+
+            MOVE.B  #'.',(A2)+
+            JSR     SIZE_TO_BUFF        * Determine & add size to buffer
+            MOVE.B  #' ',(A2)+
+            MOVE.B  #' ',(A2)+
+            MOVE.B  #' ',(A2)+
+            MOVE.B  #' ',(A2)+
+            JSR     GET_EA            * Source Operand
+            MOVE.B  #',',(A2)+
+            MOVE.B  #'D',(A2)+  
+            JSR     H_REG_BITS         * Add register number to buffer
+            JMP     END_1011             * Skip to end of sub: hex1_1011
+      
+                        
+opEOR       MOVE.B  #'E',(A2)+          * Populate EOR
+            MOVE.B  #'O',(A2)+
+            MOVE.B  #'R',(A2)+
+            MOVE.B  #'.',(A2)+
+            JSR     SIZE_TO_BUFF         * Determine & add size to buffer
+            MOVE.B  #' ',(A2)+
+            MOVE.B  #' ',(A2)+
+            MOVE.B  #' ',(A2)+
+            MOVE.B  #' ',(A2)+
+            MOVE.B  #'D',(A2)+  
+            JSR     H_REG_BITS        * Add register number to buffer            
+            MOVE.B  #',',(A2)+
+            JSR     GET_EA               * Destination Operand
+                             
 END_1011     RTS
+
 
 HEX_ONE_1100   MOVE.W  D7,D6
 OP_MULU      LSR.L   #6,D6
